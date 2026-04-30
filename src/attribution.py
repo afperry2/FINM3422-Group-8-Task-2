@@ -7,10 +7,9 @@ def brinson_attribution(
     taa_weights: dict,
     saa_weights: dict,
 ) -> dict:
-    wp = pd.Series(taa_weights)   # portfolio (TAA) weights
-    wb = pd.Series(saa_weights)   # benchmark (SAA) weights
+    wp = pd.Series(taa_weights)
+    wb = pd.Series(saa_weights)
 
-   
     fund_return      = df_managers.mul(wp).sum(axis=1)
     benchmark_return = df_benchmarks.mul(wb).sum(axis=1)
 
@@ -28,13 +27,23 @@ def brinson_attribution(
     summary["Total Active"] = summary["Allocation Effect"] + summary["Selection Effect"]
 
     totals = pd.Series({
-        "Allocation Effect": alloc_monthly.sum(axis=1).mean(),
-        "Selection Effect":  selec_monthly.sum(axis=1).mean(),
+        "Allocation Effect":   alloc_monthly.sum(axis=1).mean(),
+        "Selection Effect":    selec_monthly.sum(axis=1).mean(),
         "Total Active Return": (fund_return - benchmark_return).mean(),
     })
 
+    overview = pd.DataFrame({
+        "SAA Weight":         wb,
+        "TAA Weight":         wp,
+        "Weight Diff":        wp - wb,
+        "Allocation Effect":  alloc_monthly.mean(),
+        "Selection Effect":   selec_monthly.mean(),
+        "Total Contribution": summary["Total Active"],
+    })
+
     return {
-        "monthly": {"allocation": alloc_monthly, "selection": selec_monthly},
-        "summary": summary,
-        "totals":  totals,
+        "monthly":  {"allocation": alloc_monthly, "selection": selec_monthly},
+        "summary":  summary,
+        "totals":   totals,
+        "overview": overview,   
     }
