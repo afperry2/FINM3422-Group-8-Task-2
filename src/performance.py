@@ -99,3 +99,50 @@ def build_fund_table(portfolio_return, benchmark_return, rf):
         ]
     }
     return pd.DataFrame(data).set_index("Metric").round(4)
+
+
+def run_apra_checks(portfolio_return, rf, cpi=0.02, target_spread=0.04,
+                     vol_min=0.08, vol_max=0.12, drawdown_limit=-0.25,
+                     equity_shock=-0.20):
+
+    ann_ret = annualised_return(portfolio_return)
+    ann_vol = annualised_volatility(portfolio_return)
+    mdd     = max_drawdown(portfolio_return)
+    target  = cpi + target_spread
+
+    # Shock scenario — apply -20% equity shock to last month
+    shocked_ret = (
+        TAA_WEIGHTS["AUS EQ"]      * equity_shock +
+        TAA_WEIGHTS["INTL EQ"]     * equity_shock +
+        TAA_WEIGHTS["Bonds"]       * -0.02 +
+        TAA_WEIGHTS["Real Estate"] * -0.02 +
+        TAA_WEIGHTS["PE/VC"]       * -0.02
+    )
+
+    results = {
+        "Check": [
+            "1. Long-Run Return vs CPI + 4%",
+            "2. Volatility Band (8–12%)",
+            "3. Max Drawdown Threshold (> -25%)",
+            "4. Equity Shock Scenario (-20%)"
+        ],
+        "Value": [
+            f"{ann_ret:.2%}",
+            f"{ann_vol:.2%}",
+            f"{mdd:.2%}",
+            f"{shocked_ret:.2%}"
+        ],
+        "Threshold": [
+            f"≥ {target:.2%} (CPI {cpi:.0%} + {target_spread:.0%})",
+            "8.00% – 12.00%",
+            "> -25.00%",
+            "Observe impact"
+        ],
+        "Pass": [
+            "Pass" if ann_ret >= target else "Fail",
+            "Below band" if ann_vol < vol_min else ("Pass" if ann_vol <= vol_max else "Fail"),
+            "Pass" if mdd > drawdown_limit else "Fail",
+            "Resilient" if shocked_ret > 0 else "Negative under shock"
+        ]
+    }
+    return pd.DataFrame(results).set_index("Check")
