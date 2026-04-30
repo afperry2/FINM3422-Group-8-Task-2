@@ -63,3 +63,39 @@ def build_performance_table(manager_data, benchmark_data, rf):
         })
     df = pd.DataFrame(results).set_index("Asset Class").round(4)
     return df
+
+
+from src.performance import annualised_return, annualised_volatility, sharpe_ratio, max_drawdown
+
+TAA_WEIGHTS = {
+    "AUS EQ": 0.35, "INTL EQ": 0.35,
+    "Bonds": 0.15, "Real Estate": 0.05, "PE/VC": 0.10
+}
+
+SAA_WEIGHTS = {
+    "AUS EQ": 0.40, "INTL EQ": 0.30,
+    "Bonds": 0.20, "Real Estate": 0.05, "PE/VC": 0.05
+}
+
+def compute_portfolio_returns(manager_data, benchmark_data):
+    portfolio_return   = sum(manager_data[a]   * TAA_WEIGHTS[a] for a in TAA_WEIGHTS)
+    benchmark_return   = sum(benchmark_data[a] * SAA_WEIGHTS[a] for a in SAA_WEIGHTS)
+    return portfolio_return, benchmark_return
+
+def build_fund_table(portfolio_return, benchmark_return, rf):
+    data = {
+        "Metric": ["Annualised Return", "Annualised Volatility", "Sharpe Ratio", "Max Drawdown"],
+        "Total Fund": [
+            annualised_return(portfolio_return),
+            annualised_volatility(portfolio_return),
+            sharpe_ratio(portfolio_return, rf),
+            max_drawdown(portfolio_return)
+        ],
+        "Composite Benchmark": [
+            annualised_return(benchmark_return),
+            annualised_volatility(benchmark_return),
+            sharpe_ratio(benchmark_return, rf),
+            max_drawdown(benchmark_return)
+        ]
+    }
+    return pd.DataFrame(data).set_index("Metric").round(4)
