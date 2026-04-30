@@ -51,3 +51,23 @@ def plot_ir_bar(performance_table):
                 ha="center", va="bottom", fontsize=8)
     plt.tight_layout()
     plt.show()
+
+
+def plot_attribution(attribution_table):
+    fig, ax = plt.subplots(figsize=(10, 5))
+    x = range(len(attribution_table))
+    width = 0.35
+
+    ax.bar([i - width/2 for i in x], attribution_table["Allocation Effect"],
+           width=width, label="Allocation Effect", color="#2196F3")
+    ax.bar([i + width/2 for i in x], attribution_table["Selection Effect"],
+           width=width, label="Selection Effect", color="#FF8C00")
+
+    ax.axhline(0, color="black", linewidth=0.8)
+    ax.set_xticks(list(x))
+    ax.set_xticklabels(attribution_table.index, rotation=45)
+    ax.set_title("Figure 4: Attribution by Asset Class")
+    ax.set_ylabel("Contribution to Active Return")
+    ax.legend()
+    plt.tight_layout()
+    plt.show()
