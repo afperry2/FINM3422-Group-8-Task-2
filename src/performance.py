@@ -144,3 +144,60 @@ def apra_checks(
     }
 
     return pd.DataFrame(checks).T
+# Equity Markets Crash Scenario 1 - a 20$ reduction int he equity markets 
+
+import pandas as pd
+
+# Apply shock: 20% reduction in AUS_EQ and INTL_EQ for a single month we can choose the 3rd last month in the data (arbitrary choice for demonstration)
+
+def equity_crash(df_managers: pd.DataFrame, taa_weights: dict) -> pd.DataFrame:
+    taa = pd.Series(taa_weights)
+
+    normal_returns = df_managers.iloc[-3].copy()
+    return_normal  = (taa * normal_returns).sum()
+
+    shock_a = normal_returns.copy()
+    shock_a["aus_eq"]  = normal_returns["aus_eq"]  - 0.20
+    shock_a["intl_eq"] = normal_returns["intl_eq"] - 0.20
+    return_shock_a = (taa * shock_a).sum()
+
+    return pd.DataFrame({
+        "Scenario": ["Baseline", "A: Equity Crash (-20%)"],
+        "Portfolio Return": [return_normal, return_shock_a],
+        "Impact vs Baseline": [0, return_shock_a - return_normal],
+    }).set_index("Scenario")
+
+# SHock B is the bond yield spiking scenario 
+
+import pandas as pd
+
+def bond_yield_spike(
+    df_managers: pd.DataFrame,
+    taa_weights: dict,
+    bond_duration: float = 4.0,   # adjust to your portfolio's duration
+    rate_shock: float = 0.015,    # +150 bps = 1.5%
+) -> pd.DataFrame:
+
+    taa = pd.Series(taa_weights)
+
+    normal_returns = df_managers.iloc[-3].copy()
+    return_normal  = (taa * normal_returns).sum()
+
+    # Bond shock = -(duration x rate_shock)
+    bond_shock = -(bond_duration * rate_shock)   # e.g. -(5 x 0.015) = -7.5%
+
+    shock_b = normal_returns.copy()
+    shock_b["aus_eq"]  = normal_returns["aus_eq"]  - 0.02
+    shock_b["intl_eq"] = normal_returns["intl_eq"] - 0.02
+    shock_b["bonds"]   = normal_returns["bonds"]   + bond_shock
+    shock_b["re"]      = normal_returns["re"]      - 0.05
+    shock_b["pevc"]    = normal_returns["pevc"]    - 0.02
+
+    return_shock_b = (taa * shock_b).sum()
+
+    return pd.DataFrame({
+        "Scenario": ["Baseline", "Bond Yield Spike (+150bps)"],
+        "Portfolio Return":    [return_normal, return_shock_b],
+        "Impact vs Baseline":  [0, return_shock_b - return_normal],
+        "Bond Shock Applied":  [0, bond_shock],
+    }).set_index("Scenario")
