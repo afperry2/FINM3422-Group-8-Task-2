@@ -1,6 +1,8 @@
-# GABBY
-
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+# Section 3.2 - Sleeve Level Charts
 
 def plot_sleeve_wealth_index(manager_data, benchmark_data):
     assets = list(manager_data.keys())
@@ -14,7 +16,7 @@ def plot_sleeve_wealth_index(manager_data, benchmark_data):
 
         axes[i].plot(mgr_wealth.index, mgr_wealth.values, label="Manager", color="#FF6F3C")
         axes[i].plot(bm_wealth.index, bm_wealth.values,  label="Benchmark", color="#0B6623", linestyle="--")
-        axes[i].set_title(f"{fig_labels[i]}: {asset}")
+        axes[i].set_title(f"{fig_labels[i]}: {SLEEVE_LABELS.get(asset, asset)}")
         axes[i].set_xlabel("Month")
         axes[i].set_ylabel("Wealth Index")
         axes[i].tick_params(axis='x', rotation=45)
@@ -26,92 +28,7 @@ def plot_sleeve_wealth_index(manager_data, benchmark_data):
     plt.tight_layout()
     plt.show()
 
-
-def plot_sharpe_bar(performance_table):
-    fig, ax = plt.subplots(figsize=(8, 4))
-    bars = ax.bar(performance_table.index, performance_table["Sharpe Ratio"], color="#FF69B4")
-    ax.axhline(0, color="black", linewidth=0.8)
-    ax.set_title("Figure 2: Sharpe Ratio by Asset Class")
-    ax.set_ylabel("Sharpe Ratio")
-    ax.set_xlabel("Asset Class")
-    for bar, val in zip(bars, performance_table["Sharpe Ratio"]):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01, f"{val:.4f}",
-                ha="center", va="bottom", fontsize=8)
-    plt.tight_layout()
-    plt.show()
-
-
-def plot_ir_bar(performance_table):
-    fig, ax = plt.subplots(figsize=(8, 4))
-    bars = ax.bar(performance_table.index, performance_table["Information Ratio"], color="#FF69B4")
-    ax.axhline(0, color="black", linewidth=0.8)
-    ax.set_title("Figure 3: Information Ratio by Asset Class")
-    ax.set_ylabel("Information Ratio")
-    ax.set_xlabel("Asset Class")
-    for bar, val in zip(bars, performance_table["Information Ratio"]):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01, f"{val:.4f}",
-                ha="center", va="bottom", fontsize=8)
-    plt.tight_layout()
-    plt.show()
-
-
-def plot_fund_vs_benchmark(portfolio_return, benchmark_return):
-    wealth_fund = (1 + portfolio_return).cumprod()
-    wealth_bm   = (1 + benchmark_return).cumprod()
-    fig, ax = plt.subplots(figsize=(14, 6))
-
-    ax.fill_between(
-        wealth_fund.index, wealth_fund, wealth_bm,
-        where=(wealth_fund >= wealth_bm),
-        interpolate=True, alpha=0.25, color="yellow", label="Outperformance"
-    )
-    ax.fill_between(
-        wealth_fund.index, wealth_fund, wealth_bm,
-        where=(wealth_fund < wealth_bm),
-        interpolate=True, alpha=0.25, color="blue", label="Underperformance"
-    )
-
-    ax.plot(wealth_fund, color="#FF6F3C", linewidth=1.8, label="Total Fund (TAA)")
-    ax.plot(wealth_bm,   color="#0B6623", linewidth=1.4, linestyle="--", label="Composite Benchmark (SAA)")
-
-    ax.set_title("Figure 4: Total Fund vs Composite Benchmark — Cumulative Wealth",
-                 fontsize=13, fontweight="bold")
-    ax.set_xlabel("Date", fontsize=11)
-    ax.set_ylabel("Wealth Index (start = 1.0)", fontsize=11)
-    ax.legend(loc="upper left", framealpha=0.9)
-    ax.grid(True, alpha=0.3)
-    ax.set_xlim(wealth_fund.index[0], wealth_fund.index[-1])
-    plt.tight_layout()
-    plt.show()
-
-
-def plot_attribution(attribution_table):
-    fig, ax = plt.subplots(figsize=(10, 5))
-    x = range(len(attribution_table))
-    width = 0.35
-
-    ax.bar([i - width/2 for i in x], attribution_table["Allocation Effect"],
-           width=width, label="Allocation Effect", color="#2196F3")
-    ax.bar([i + width/2 for i in x], attribution_table["Selection Effect"],
-           width=width, label="Selection Effect", color="#FF8C00")
-
-    ax.axhline(0, color="black", linewidth=0.8)
-    ax.set_xticks(list(x))
-    ax.set_xticklabels(attribution_table.index, rotation=45)
-    ax.set_title("Figure 5: Attribution by Asset Class")
-    ax.set_ylabel("Contribution to Active Return")
-    ax.legend()
-    plt.tight_layout()
-    plt.show()
-
-# MASON
-
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-import numpy as np
-
-
-def plot_fund_vs_benchmark(
+def plot_sleeve_vs_benchmark(
     fund_returns,
     benchmark_returns,
     title: str = "Total Fund vs Composite Benchmark — Cumulative Wealth",
@@ -143,8 +60,7 @@ def plot_fund_vs_benchmark(
         alpha=0.25,
         color="orange",
         label="Underperformance",
-    )
-
+    )    
     # ── Lines ──────────────────────────────────────────────────────────────
     ax.plot(wealth_fund, color="#1a5fb4", linewidth=1.8, label="Total Fund (TAA)")
     ax.plot(wealth_bm,   color="#a52a2a", linewidth=1.4, linestyle="--", label="Composite Benchmark (SAA)")
@@ -164,6 +80,63 @@ def plot_fund_vs_benchmark(
         print(f"Chart saved to {save_path}")
 
     plt.show()
+
+def plot_fund_vs_benchmark(portfolio_return, benchmark_return):
+    wealth_fund = (1 + portfolio_return).cumprod()
+    wealth_bm   = (1 + benchmark_return).cumprod()
+    fig, ax = plt.subplots(figsize=(14, 6))
+
+    ax.fill_between(
+        wealth_fund.index, wealth_fund, wealth_bm,
+        where=(wealth_fund >= wealth_bm),
+        interpolate=True, alpha=0.25, color="yellow", label="Outperformance"
+    )
+    ax.fill_between(
+        wealth_fund.index, wealth_fund, wealth_bm,
+        where=(wealth_fund < wealth_bm),
+        interpolate=True, alpha=0.25, color="blue", label="Underperformance"
+    )
+
+    ax.plot(wealth_fund, color="#FF6F3C", linewidth=1.8, label="Total Fund (TAA)")
+    ax.plot(wealth_bm,   color="#0B6623", linewidth=1.4, linestyle="--", label="Composite Benchmark (SAA)")
+
+    ax.set_title("Figure 4: Total Fund vs Composite Benchmark — Cumulative Wealth",
+                 fontsize=13, fontweight="bold")
+    ax.set_xlabel("Date", fontsize=11)
+    ax.set_ylabel("Wealth Index (start = 1.0)", fontsize=11)
+    ax.legend(loc="upper left", framealpha=0.9)
+    ax.grid(True, alpha=0.3)
+    ax.set_xlim(wealth_fund.index[0], wealth_fund.index[-1])
+    plt.tight_layout()
+    plt.show()
+
+def plot_sharpe_bar(performance_table):
+    fig, ax = plt.subplots(figsize=(8, 4))
+    bars = ax.bar(performance_table.index, performance_table["Sharpe Ratio"], color="#FF69B4")
+    ax.axhline(0, color="black", linewidth=0.8)
+    ax.set_title("Figure 2: Sharpe Ratio by Asset Class")
+    ax.set_ylabel("Sharpe Ratio")
+    ax.set_xlabel("Asset Class")
+    for bar, val in zip(bars, performance_table["Sharpe Ratio"]):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01, f"{val:.4f}",
+                ha="center", va="bottom", fontsize=8)
+    plt.tight_layout()
+    plt.show()
+
+def plot_ir_bar(performance_table):
+    fig, ax = plt.subplots(figsize=(8, 4))
+    bars = ax.bar(performance_table.index, performance_table["Information Ratio"], color="#FF69B4")
+    ax.axhline(0, color="black", linewidth=0.8)
+    ax.set_title("Figure 3: Information Ratio by Asset Class")
+    ax.set_ylabel("Information Ratio")
+    ax.set_xlabel("Asset Class")
+    for bar, val in zip(bars, performance_table["Information Ratio"]):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01, f"{val:.4f}",
+                ha="center", va="bottom", fontsize=8)
+    plt.tight_layout()
+    plt.show()
+
+# SECTON 4 - APRA CHECKS AND TOTAL FUND
 
 def plot_apra_drawdown_threshold(
     fund_returns,
@@ -205,5 +178,26 @@ def plot_apra_drawdown_threshold(
     ax.legend(loc="lower right")
     ax.grid(True, alpha=0.3)
 
+    plt.tight_layout()
+    plt.show()
+
+# SECTION 5 - ATTRIBUTION
+
+def plot_attribution(attribution_table):
+    fig, ax = plt.subplots(figsize=(10, 5))
+    x = range(len(attribution_table))
+    width = 0.35
+
+    ax.bar([i - width/2 for i in x], attribution_table["allocation effect"],
+           width=width, label="allocation effect", color="#2196F3")
+    ax.bar([i + width/2 for i in x], attribution_table["selection effect"],
+           width=width, label="selection effect", color="#FF8C00")
+
+    ax.axhline(0, color="black", linewidth=0.8)
+    ax.set_xticks(list(x))
+    ax.set_xticklabels(attribution_table.index, rotation=45)
+    ax.set_title("Figure 5: Attribution by Asset Class")
+    ax.set_ylabel("Contribution to Active Return")
+    ax.legend()
     plt.tight_layout()
     plt.show()
