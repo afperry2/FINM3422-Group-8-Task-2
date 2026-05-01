@@ -1,13 +1,26 @@
-# AI Usage 
+# AI USAGE DECLARATION
+## Group 8 - FINM3422 Assessment 2
 
-This section details the usage of AI throughout the preparation of the multi-asset performance and risk analysis report. 
+## Tools Used
+- Claude.ai
+- ChatGPT
 
-The AI tools used to complete the report include:
-1. Claude
-2. ChatGPT
+## Tasks Performed
+### Code Development
+- Debugging errors on data loading and setup
+- Advice on structuring "/src" modules, including the addition of charts.py for ease of interpreting large bodies of code.
+- Reviewing code to check function structure and code quality
+- Assistance with matplotlib visualisation formatting
+- Help with formatting within README.md
 
-The processes AI was used in to complete the report are the following: 
-1. AI used to find the naming error in file paths that was causing data reference error
-2. AI used to help convert Markdown text formulas into the formatting to generate mathematical formulas for methodology
-3. AI used to identify errors in the operation of code, specifically misplaced commas and unclosed brackets. 
-4. 
+## Tasks NOT Performed
+- All financial formulas were implemented based on the Supplementary Reader
+- All analysis and conclusions were created by team members
+- AI did not have access to the dataset
+- All AI-generated code was reviewed and understood by the team before implementation
+
+## Team Accountability
+All team members have reviewed the AI-assisted content and take full responsibility for the accuracy and integrity of submitted work.
+- Amelia Perry (49702116)
+- Gabriella Olivotto (49613007)
+- Mason Plummer (49606090)
