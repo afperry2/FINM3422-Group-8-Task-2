@@ -76,6 +76,43 @@ def sleeve_summary(sleeve_name: str, monthly_returns: pd.Series, monthly_bm: pd.
         "Maximum Drawdown (Benchmark)": max_drawdown(monthly_bm)
     }, name=sleeve_name)
 
+def all_sleeves_summary(
+    df_managers: pd.DataFrame,
+    df_benchmarks: pd.DataFrame,
+    df_rf: pd.Series
+) -> pd.DataFrame:
+    """Run sleeve_summary() across all sleeves and return a combined DataFrame."""
+    results = {}
+    for sleeve in df_managers.columns:
+        results[sleeve] = sleeve_summary(
+            sleeve_name     = sleeve,
+            monthly_returns = df_managers[sleeve],
+            monthly_bm      = df_benchmarks[sleeve],
+            monthly_rf      = df_rf.squeeze()
+        )
+    return pd.DataFrame(results)
+
+def display_summary_tables(summary: pd.DataFrame) -> None:
+    """
+    Display formatted performance and risk summary tables.
+    summary : output of all_sleeves_summary()
+    """
+    pct_rows = [
+        "Annualised Return (Manager)",
+        "Annualised Return (Benchmark)",
+        "Annualised Volatility",
+        "Tracking Error",
+        "Maximum Drawdown (Manager)",
+        "Maximum Drawdown (Benchmark)",
+    ]
+    ratio_rows = ["Sharpe Ratio", "Information Ratio"]
+
+    print("Table 1: Performance & Risk Summary (%)")
+    display(summary.loc[pct_rows].T.map(lambda x: f"{x:.2%}"))
+
+    print("Table 2: Ratios")
+    display(summary.loc[ratio_rows].T.map(lambda x: f"{x:.2f}"))
+
 # --- APRA-INSPIRED CHECKS ---
  
 def apra_checks(
@@ -186,4 +223,25 @@ def bond_yield_spike(
         "PE/VC":            [f"{normal_returns['pevc']:.2%}",    f"{shocked['pevc']:.2%}"],
         "Portfolio Return": [f"{return_normal:.2%}", f"{return_shocked:.2%}"],
         "Impact vs Normal": ["-", f"{return_shocked - return_normal:.2%}"],
+    })
+
+# Total Fund Vs. Benchmark Comparison
+
+def fund_vs_benchmark(
+    df_fund_monthly: pd.Series,
+    df_benchmark_monthly: pd.Series
+) -> pd.DataFrame:
+    """Comparison table of total fund vs composite benchmark metrics."""
+    return pd.DataFrame({
+        "Metric": ["Annualised Return", "Annualised Volatility", "Maximum Drawdown"],
+        "Total Fund (TAA)": [
+            f"{annualised_return(df_fund_monthly):.2%}",
+            f"{annualised_volatility(df_fund_monthly):.2%}",
+            f"{max_drawdown(df_fund_monthly):.2%}"
+        ],
+        "Composite Benchmark (SAA)": [
+            f"{annualised_return(df_benchmark_monthly):.2%}",
+            f"{annualised_volatility(df_benchmark_monthly):.2%}",
+            f"{max_drawdown(df_benchmark_monthly):.2%}"
+        ]
     })

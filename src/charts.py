@@ -4,7 +4,7 @@ import pandas as pd
 
 # Section 3.2 - Sleeve Level Charts
 
-def plot_sleeve_wealth_index(manager_data, benchmark_data):
+def plot_sleeve_wealth_index(manager_data, benchmark_data, sleeve_labels):
     assets = list(manager_data.keys())
     fig, axes = plt.subplots(2, 3, figsize=(15, 8))
     axes = axes.flatten()
@@ -16,7 +16,7 @@ def plot_sleeve_wealth_index(manager_data, benchmark_data):
 
         axes[i].plot(mgr_wealth.index, mgr_wealth.values, label="Manager", color="#FF6F3C")
         axes[i].plot(bm_wealth.index, bm_wealth.values,  label="Benchmark", color="#0B6623", linestyle="--")
-        axes[i].set_title(f"{fig_labels[i]}: {SLEEVE_LABELS.get(asset, asset)}")
+        axes[i].set_title(f"{fig_labels[i]}: {sleeve_labels.get(asset, asset)}")
         axes[i].set_xlabel("Month")
         axes[i].set_ylabel("Wealth Index")
         axes[i].tick_params(axis='x', rotation=45)
