@@ -188,10 +188,10 @@ def plot_attribution(attribution_table):
     x = range(len(attribution_table))
     width = 0.35
 
-    ax.bar([i - width/2 for i in x], attribution_table["allocation effect"],
-           width=width, label="allocation effect", color="#2196F3")
-    ax.bar([i + width/2 for i in x], attribution_table["selection effect"],
-           width=width, label="selection effect", color="#FF8C00")
+    ax.bar([i - width/2 for i in x], attribution_table["Allocation Effect"],
+       width=width, label="Allocation Effect", color="#2196F3")
+    ax.bar([i + width/2 for i in x], attribution_table["Selection Effect"],
+       width=width, label="Selection Effect", color="#FF8C00")
 
     ax.axhline(0, color="black", linewidth=0.8)
     ax.set_xticks(list(x))
