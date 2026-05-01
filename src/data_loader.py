@@ -83,3 +83,52 @@ def load_all_data():
     saa = pd.read_csv(f"{DATA_PATH}/saa_weight.csv")
 
     return manager_data, benchmark_data, rf, saa
+
+# MASON
+
+import pandas as pd
+from pathlib import Path
+
+# ── Sleeve identifiers ──────────────────────────────────────────────────────
+SLEEVES = ["aus_eq", "intl_eq", "bonds", "re", "pevc"]
+
+SLEEVE_LABELS = {
+    "aus_eq":  "Australian Equities",
+    "intl_eq": "International Equities",
+    "bonds":   "Bonds",
+    "re":      "Real Estate",
+    "pevc":    "PE / VC",
+}
+
+# Constant TAA weights
+TAA_WEIGHTS = {
+    "aus_eq":  0.35,
+    "intl_eq": 0.35,
+    "bonds":   0.15,
+    "re":      0.05,
+    "pevc":    0.10,
+}
+
+# SAA weights
+SAA_WEIGHTS = {
+    "aus_eq":  0.40,
+    "intl_eq": 0.30,
+    "bonds":   0.20,
+    "re":      0.05,
+    "pevc":    0.05,
+}
+
+
+def _load_single(data_dir: str, filename: str, sleeve: str) -> pd.Series:
+    """
+    Load a single monthly return CSV file.
+    Expects two columns: a date column and a return column.
+    Returns a named pd.Series with a monthly DatetimeIndex (month-end).
+    """
+    filepath = Path(data_dir) / filename
+    df = pd.read_csv(filepath, index_col=0, parse_dates=True)
+    df.index = pd.to_datetime(df.index)
+    df.index = df.index.to_period("M").to_timestamp("M")   # normalise to month-end
+    series = df.squeeze()
+    series.name = sleeve
+    return series
