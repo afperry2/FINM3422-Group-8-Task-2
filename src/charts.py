@@ -53,6 +53,36 @@ def plot_ir_bar(performance_table):
     plt.show()
 
 
+def plot_fund_vs_benchmark(portfolio_return, benchmark_return):
+    wealth_fund = (1 + portfolio_return).cumprod()
+    wealth_bm   = (1 + benchmark_return).cumprod()
+    fig, ax = plt.subplots(figsize=(14, 6))
+
+    ax.fill_between(
+        wealth_fund.index, wealth_fund, wealth_bm,
+        where=(wealth_fund >= wealth_bm),
+        interpolate=True, alpha=0.25, color="yellow", label="Outperformance"
+    )
+    ax.fill_between(
+        wealth_fund.index, wealth_fund, wealth_bm,
+        where=(wealth_fund < wealth_bm),
+        interpolate=True, alpha=0.25, color="blue", label="Underperformance"
+    )
+
+    ax.plot(wealth_fund, color="#FF6F3C", linewidth=1.8, label="Total Fund (TAA)")
+    ax.plot(wealth_bm,   color="#0B6623", linewidth=1.4, linestyle="--", label="Composite Benchmark (SAA)")
+
+    ax.set_title("Figure 4: Total Fund vs Composite Benchmark — Cumulative Wealth",
+                 fontsize=13, fontweight="bold")
+    ax.set_xlabel("Date", fontsize=11)
+    ax.set_ylabel("Wealth Index (start = 1.0)", fontsize=11)
+    ax.legend(loc="upper left", framealpha=0.9)
+    ax.grid(True, alpha=0.3)
+    ax.set_xlim(wealth_fund.index[0], wealth_fund.index[-1])
+    plt.tight_layout()
+    plt.show()
+
+
 def plot_attribution(attribution_table):
     fig, ax = plt.subplots(figsize=(10, 5))
     x = range(len(attribution_table))
@@ -66,7 +96,7 @@ def plot_attribution(attribution_table):
     ax.axhline(0, color="black", linewidth=0.8)
     ax.set_xticks(list(x))
     ax.set_xticklabels(attribution_table.index, rotation=45)
-    ax.set_title("Figure 4: Attribution by Asset Class")
+    ax.set_title("Figure 5: Attribution by Asset Class")
     ax.set_ylabel("Contribution to Active Return")
     ax.legend()
     plt.tight_layout()
