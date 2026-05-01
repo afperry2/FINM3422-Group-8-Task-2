@@ -32,11 +32,11 @@ This repository contains the code and report for Assessment Task 2 of FINM3422. 
     │   ├── attribution.cpython-313.pyc
     │   ├── data_loader.cpython-313.pyc
     │   ├── performance.cpython-313.pyc
-    │   └── visuals.cpython-313.pyc
+    │   └── charts.cpython-313.pyc
     ├── attribution.py
     ├── data_loader.py
     ├── performance.py
-    └── visuals.py
+    └── charts.py
 7 directories, 24 files
 
 ### How to Run
