@@ -1,13 +1,9 @@
-# Group 8 - FINM3422 Assessment 2
 # AI USEAGE DECLARATION
-
----
+## Group 8 - FINM3422 Assessment 2
 
 ## Tools Used
 - Claude.ai
 - ChatGPT
-
----
 
 ## Tasks Performed
 ### Code Development
@@ -16,8 +12,6 @@
 - Reviewing code to check function structure and code quality
 - Assistance with matplotlib visualisation formatting
 - Help with formatting within README.md
-
----
 
 ## Team Accountability
 All team members have reviewed the AI-assisted content and take full responsibility for the accuracy and integrity of submitted work.
