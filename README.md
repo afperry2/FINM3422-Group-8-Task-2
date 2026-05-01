@@ -2,6 +2,11 @@
 ## Multi-Asset Portfolio Performance, Risk & Attribution
 This repository contains Group 8's materials for Assessment Task 2 for the course code FINM3422
 
+### Team Members
+- Amelia Perry (49702116)
+- Gabriella Olivotto (49613007)
+- Mason Plummer (49606090)
+
 ### Overview
 This repository contains the code and report for Assessment Task 2 of FINM3422. The analysis evaluates the performance, risk characteristics, and attribution of a multi-asset superannuation fund across five asset-class sleeves: Australian Equities, International Equities, Fixed Income, Real Estate, and Private Equity/Venture Capital.
 
@@ -51,3 +56,11 @@ This repository contains the code and report for Assessment Task 2 of FINM3422. 
 - numpy
 - matplotlib
 - jupyter
+
+### Report Structure
+- 1.0 Introduction
+- 2.0 Data Overview
+- 3.0 Performance & Risk Analysis
+- 4.0 APRA-Inspired Performance & Risk Checks
+- 5.0 Multi-Asset Performance Attribution
+- 6.0 Conclusion
