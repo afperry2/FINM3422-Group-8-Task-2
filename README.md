@@ -49,7 +49,7 @@ This repository contains the code and report for Assessment Task 2 of FINM3422. 
 1. Clone the repository and ensure all dependencies are installed (listed below)
 2. Open the main notebook -> notebook/multi-asset_portfolio_performance_report.ipynb
 3. Run all cells from top to bottom -> restart kernel and "run all"
-** The notebook MUST be run from top to bottom. All functions are loaded from "/src" and running cells out of order will cause errors. **
+* The notebook MUST be run from top to bottom. All functions are loaded from "/src" and running cells out of order will cause errors. 
 
 ### Dependencies
 - python version 3.11 or newer
