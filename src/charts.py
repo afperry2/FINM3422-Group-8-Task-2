@@ -29,7 +29,8 @@ def plot_sharpe_bar(performance_table):
     fig, ax = plt.subplots(figsize=(8, 4))
     bars = ax.bar(performance_table.index, performance_table["Sharpe Ratio"], color="#FF69B4")
     ax.axhline(0, color="black", linewidth=0.8)
-    ax.set_title("Figure 2: Sharpe Ratio by Asset Class")
+    ax.set_title("Figure 2: Sharpe Ratio by Asset Class",
+                 fontsize=13, fontweight="bold")
     ax.set_ylabel("Sharpe Ratio")
     ax.set_xlabel("Asset Class")
     for bar, val in zip(bars, performance_table["Sharpe Ratio"]):
@@ -43,7 +44,8 @@ def plot_ir_bar(performance_table):
     fig, ax = plt.subplots(figsize=(8, 4))
     bars = ax.bar(performance_table.index, performance_table["Information Ratio"], color="#FF69B4")
     ax.axhline(0, color="black", linewidth=0.8)
-    ax.set_title("Figure 3: Information Ratio by Asset Class")
+    ax.set_title("Figure 3: Information Ratio by Asset Class",
+                 fontsize=13, fontweight="bold")
     ax.set_ylabel("Information Ratio")
     ax.set_xlabel("Asset Class")
     for bar, val in zip(bars, performance_table["Information Ratio"]):
@@ -83,6 +85,38 @@ def plot_fund_vs_benchmark(portfolio_return, benchmark_return):
     plt.show()
 
 
+def plot_apra_drawdown(portfolio_return, threshold=-0.25):
+    wealth   = (1 + portfolio_return).cumprod()
+    peak     = wealth.cummax()
+    drawdown = (wealth - peak) / peak
+    mdd      = drawdown.min()
+    mdd_date = drawdown.idxmin()
+
+    fig, ax = plt.subplots(figsize=(12, 5))
+
+    ax.fill_between(drawdown.index, drawdown, 0,
+                    alpha=0.3, color="#2196F3", label="Drawdown")
+    ax.plot(drawdown.index, drawdown, color="#2196F3", linewidth=1.2)
+    ax.axhline(threshold, color="red", linewidth=1.2,
+               linestyle="--", label=f"Threshold: {threshold:.0%}")
+    ax.scatter(mdd_date, mdd, color="red", zorder=5, s=50)
+    ax.annotate(f"Max: {mdd:.2%}", xy=(mdd_date, mdd),
+                xytext=(mdd_date, mdd - 0.01),
+                fontsize=9, color="red", ha="center")
+
+    ax.set_title("Figure 5: Portfolio Drawdown vs APRA Threshold",
+                 fontsize=13, fontweight="bold")
+    ax.set_ylabel("Drawdown", fontsize=11)
+    ax.set_xlabel("Date", fontsize=11)
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:.1%}"))
+    ax.set_xlim(drawdown.index[0], drawdown.index[-1])
+    ax.set_ylim(min(mdd - 0.02, threshold - 0.02), 0.005)
+    ax.legend(loc="lower right")
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+
+
 def plot_attribution(attribution_table):
     fig, ax = plt.subplots(figsize=(10, 5))
     x = range(len(attribution_table))
@@ -96,7 +130,8 @@ def plot_attribution(attribution_table):
     ax.axhline(0, color="black", linewidth=0.8)
     ax.set_xticks(list(x))
     ax.set_xticklabels(attribution_table.index, rotation=45)
-    ax.set_title("Figure 5: Attribution by Asset Class")
+    ax.set_title("Figure 6: Attribution by Asset Class",
+                 fontsize=13, fontweight="bold")
     ax.set_ylabel("Contribution to Active Return")
     ax.legend()
     plt.tight_layout()
