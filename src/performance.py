@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from IPython.display import display
 
 # PERFORMANCE METRICS
 
@@ -108,7 +109,11 @@ def display_summary_tables(summary: pd.DataFrame) -> None:
     ratio_rows = ["Sharpe Ratio", "Information Ratio"]
 
     print("Table 1: Performance & Risk Summary (%)")
+    display(summary.loc[pct_rows].T.map(lambda x: f"{x:.2%}"))
+
     print("Table 2: Ratios")
+    display(summary.loc[ratio_rows].T.map(lambda x: f"{x:.2f}"))
+
 
 # --- APRA-INSPIRED CHECKS ---
  
