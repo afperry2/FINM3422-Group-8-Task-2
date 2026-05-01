@@ -11,7 +11,7 @@ This repository contains Group 8's materials for Assessment Task 2 for the cours
 This repository contains the code and report for Assessment Task 2 of FINM3422. The analysis evaluates the performance, risk characteristics, and attribution of a multi-asset superannuation fund across five asset-class sleeves: Australian Equities, International Equities, Fixed Income, Real Estate, and Private Equity/Venture Capital.
 
 ### Repository File Structure
-.
+```
 ├── AI_USAGE.md
 ├── README.md
 ├── data
@@ -42,6 +42,7 @@ This repository contains the code and report for Assessment Task 2 of FINM3422. 
     ├── data_loader.py
     ├── performance.py
     └── charts.py
+```
 7 directories, 24 files
 
 ### How to Run
