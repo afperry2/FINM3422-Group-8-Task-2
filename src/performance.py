@@ -1,0 +1,96 @@
+import pandas as pd
+import numpy as np
+import sys
+
+# PERFORMANCE METRICS
+
+# Parameters
+# monthly_returns: pd.Series - monthly decimal returns of mananager
+# monthly_bm: pd.Series - monthly decimal returns of benchmark
+# monthly_rf: pd.Series - monthly decimal risk-free rate return
+
+
+# Annualised Return
+def annualised_return(monthly_returns: pd.Series) -> float:
+    n = len(monthly_returns)
+    compounded = (1 + monthly_returns).prod()
+    return compounded ** (12 / n) - 1
+
+# Annualised Volatility
+def annualised_volatility(monthly_returns: pd.Series) -> float:
+    return monthly_returns.std() * np.sqrt(12)
+
+# Sharpe Ratio
+def sharpe_ratio(monthly_returns: pd.Series, monthly_rf: pd.Series) -> float:
+    monthly_returns, monthly_rf = monthly_returns.align(monthly_rf, join="inner")
+    r_ann = annualised_return(monthly_returns)
+    rf_ann = annualised_return(monthly_rf)
+    sigma = annualised_volatility(monthly_returns)
+    if sigma == 0:
+        return np.nan
+    return (r_ann - rf_ann) / sigma
+
+# Information Ratio
+def information_ratio(monthly_returns: pd.Series, monthly_bm: pd.Series) -> float:
+    r_ann = annualised_return(monthly_returns)
+    rb_ann = annualised_return(monthly_bm)
+    te = tracking_error(monthly_returns, monthly_bm)
+    if te == 0:
+        return np.nan
+    return (r_ann - rb_ann) / te
+
+# RISK METRICS
+
+# Tracking Error vs Benchmark
+def tracking_error(monthly_returns: pd.Series, monthly_bm: pd.Series) -> float:
+    active = monthly_returns - monthly_bm
+    return active.std() * np.sqrt(12)
+
+
+# Maximum Drawdown
+def max_drawdown(monthly_returns: pd.Series) -> float:
+    wealth = (1 + monthly_returns).cumprod()
+    rolling_max = wealth.cummax()
+    drawdowns = (wealth - rolling_max) / rolling_max
+    return drawdowns.min()
+
+# SUMMARY PERFORMANCE AND RISK
+
+# Parameters:
+# sleeve_name: str - name of the sleeve (e.g., "aus_eq")
+# monthly_returns: pd.Series - manager monthly returns
+# monthly_bm: pd.Series - benchmark monthly returns
+# monthtly_rf: pd.Series - risk-free monthly returns
+# df_managers: pd.DataFrame - all manager returns (columns=sleeves)
+# df_benchmarks: pd.DataFrame - all benchmark returns (columns=sleeves)
+# df_rf: pd.DataFrame - monthly risk-free returns (single column)
+
+# Summary (all metrics for a given sleeve)
+def sleeve_summary(sleeve_name: str, monthly_returns: pd.Series, monthly_bm: pd.Series, monthly_rf: pd.Series) -> pd.Series:
+    return pd.Series ({
+        "Annualised Return (Manager)": annualised_return(monthly_returns),
+        "Annualised Return (Benchmark)": annualised_return(monthly_bm),
+        "Annualised Volatility": annualised_volatility(monthly_returns),
+        "Sharpe Ratio": sharpe_ratio(monthly_returns, monthly_rf),
+        "Tracking Error": tracking_error(monthly_returns, monthly_bm),
+        "Information Ratio": information_ratio(monthly_returns, monthly_bm),
+        "Maximum Drawdown (Manager)": max_drawdown(monthly_returns),
+        "Maximum Drawdown (Benchmark)": max_drawdown(monthly_bm)
+    }, name=sleeve_name)
+
+
+# Full Portfolio (all sleeves)
+def all_sleeves_summary(
+    df_managers: pd.DataFrame,
+    df_benchmarks: pd.DataFrame,
+    df_rf: pd.Series
+) -> pd.DataFrame:
+    results = {}
+    for sleeve in df_managers.columns:
+        results[sleeve] = sleeve_summary(
+            sleeve_name       = sleeve,
+            monthly_returns   = df_managers[sleeve],
+            monthly_bm = df_benchmarks[sleeve],
+            monthly_rf        = df_rf.squeeze()   # convert single-col DataFrame to Series
+        )
+    return pd.DataFrame(results)
